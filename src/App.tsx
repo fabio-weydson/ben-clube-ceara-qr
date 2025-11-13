@@ -17,6 +17,7 @@ function App() {
       window.location.href = `/validacao?token=${token}`;
       return;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
