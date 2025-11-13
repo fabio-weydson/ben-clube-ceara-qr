@@ -70,13 +70,13 @@ const MemberValidation: React.FC = () => {
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case "active":
+      case "Ativo":
         return "Ativo";
-      case "inactive":
+      case "Inativo":
         return "Inativo";
-      case "pending":
+      case "Pendente":
         return "Pendente";
-      case "expired":
+      case "Expirado":
         return "Expirado";
       default:
         return status;
