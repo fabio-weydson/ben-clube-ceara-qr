@@ -11,6 +11,14 @@ const MemberDashboard: React.FC = () => {
     address: "",
     birth_date: "",
     expiration_date: "",
+    contract_number: "",
+    postal_code: "",
+    district: "",
+    city: "",
+    state: "",
+    profession: "",
+    agent: "",
+    referral: "",
   });
 
   const [affiliates, setAffiliates] = useState<
@@ -25,6 +33,7 @@ const MemberDashboard: React.FC = () => {
       | "expiration_date"
       | "join_date"
       | "status"
+      | "referral"
     >[]
   >([]);
   const [currentAffiliate, setCurrentAffiliate] = useState({
@@ -32,7 +41,14 @@ const MemberDashboard: React.FC = () => {
     cpf_dni: "",
     phone: "",
     email: "",
-    member_type: "",
+    member_type: "affiliate",
+    contractNumber: "",
+    postalCode: "",
+    district: "",
+    city: "",
+    state: "",
+    profession: "",
+    agent: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -42,7 +58,41 @@ const MemberDashboard: React.FC = () => {
     message?: string;
   } | null>(null);
 
+  const defaultExpirationDate = () => {
+    const today = new Date();
+    today.setMonth(today.getMonth() + 1);
+    return today.toISOString().split("T")[0];
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.name === "postal_code") {
+      setLoading(true);
+      const formattedPostalCode = e.target.value
+        .replace(/\D/g, "")
+        .slice(0, 10);
+      if (formattedPostalCode.length === 8) {
+        fetch(`https://viacep.com.br/ws/${formattedPostalCode}/json/`)
+          .then((response) => response.json())
+          .then((data) => {
+            if (!data.erro) {
+              setFormData({
+                ...formData,
+                postal_code: formattedPostalCode,
+                address: data.logradouro || "",
+                district: data.bairro || "",
+                city: data.localidade || "",
+                state: data.uf || "",
+              });
+            }
+          })
+          .catch((error) => {
+            console.error("Erro ao buscar CEP:", error);
+          });
+      }
+      setLoading(false);
+      setFormData({ ...formData, [e.target.name]: formattedPostalCode });
+      return;
+    }
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -68,6 +118,13 @@ const MemberDashboard: React.FC = () => {
       phone: "",
       email: "",
       member_type: "affiliate",
+      contractNumber: "",
+      postalCode: "",
+      district: "",
+      city: "",
+      state: "",
+      profession: "",
+      agent: "",
     });
   };
 
@@ -122,6 +179,14 @@ const MemberDashboard: React.FC = () => {
         address: "",
         birth_date: "",
         expiration_date: "",
+        contract_number: "",
+        postal_code: "",
+        district: "",
+        city: "",
+        state: "",
+        profession: "",
+        agent: "",
+        referral: "",
       });
       setAffiliates([]);
     } catch (error) {
@@ -211,6 +276,33 @@ const MemberDashboard: React.FC = () => {
                 />
               </div>
 
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Número do contrato
+                </label>
+                <input
+                  type="text"
+                  name="contract_number"
+                  value={formData.contract_number}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  CEP
+                </label>
+                <input
+                  type="text"
+                  name="postal_code"
+                  value={formData.postal_code}
+                  onChange={handleInputChange}
+                  maxLength={10}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                />
+              </div>
+
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Endereço
@@ -219,6 +311,114 @@ const MemberDashboard: React.FC = () => {
                   type="text"
                   name="address"
                   value={formData.address}
+                  onChange={handleInputChange}
+                  disabled={loading}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Bairro
+                </label>
+                <input
+                  type="text"
+                  name="district"
+                  value={formData.district}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Cidade
+                </label>
+                <input
+                  type="text"
+                  name="city"
+                  value={formData.city}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Estado
+                </label>
+                <select
+                  name="state"
+                  value={formData.state}
+                  onChange={(e) =>
+                    setFormData({ ...formData, state: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                >
+                  <option value="">Selecione um estado</option>
+                  <option value="AC">Acre</option>
+                  <option value="AL">Alagoas</option>
+                  <option value="AP">Amapá</option>
+                  <option value="AM">Amazonas</option>
+                  <option value="BA">Bahia</option>
+                  <option value="CE">Ceará</option>
+                  <option value="DF">Distrito Federal</option>
+                  <option value="ES">Espírito Santo</option>
+                  <option value="GO">Goiás</option>
+                  <option value="MA">Maranhão</option>
+                  <option value="MT">Mato Grosso</option>
+                  <option value="MS">Mato Grosso do Sul</option>
+                  <option value="MG">Minas Gerais</option>
+                  <option value="PA">Pará</option>
+                  <option value="PB">Paraíba</option>
+                  <option value="PR">Paraná</option>
+                  <option value="PE">Pernambuco</option>
+                  <option value="PI">Piauí</option>
+                  <option value="RJ">Rio de Janeiro</option>
+                  <option value="RN">Rio Grande do Norte</option>
+                  <option value="RS">Rio Grande do Sul</option>
+                  <option value="RO">Rondônia</option>
+                  <option value="RR">Roraima</option>
+                  <option value="SC">Santa Catarina</option>
+                  <option value="SP">São Paulo</option>
+                  <option value="SE">Sergipe</option>
+                  <option value="TO">Tocantins</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Profissão
+                </label>
+                <input
+                  type="text"
+                  name="profession"
+                  value={formData.profession}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Agente
+                </label>
+                <input
+                  type="text"
+                  name="agent"
+                  value={formData.agent}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Indicação
+                </label>
+                <input
+                  type="text"
+                  name="referral"
+                  value={formData.referral}
                   onChange={handleInputChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 />
@@ -244,7 +444,7 @@ const MemberDashboard: React.FC = () => {
                 <input
                   type="date"
                   name="expiration_date"
-                  value={formData.expiration_date}
+                  value={formData.expiration_date || defaultExpirationDate()}
                   onChange={handleInputChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 />
@@ -325,6 +525,30 @@ const MemberDashboard: React.FC = () => {
                   ))}
                 </div>
               )}
+              <div className="mt-4 space-y-2">
+                <label className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    checked
+                    name="notify_email"
+                    className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-2 focus:ring-primary-500"
+                  />
+                  <span className="text-sm font-medium text-gray-700">
+                    Notificar via Email
+                  </span>
+                </label>
+                <label className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    checked
+                    name="notify_whatsapp"
+                    className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-2 focus:ring-primary-500"
+                  />
+                  <span className="text-sm font-medium text-gray-700">
+                    Notificar via Whatsapp
+                  </span>
+                </label>
+              </div>
             </div>
 
             <button
@@ -332,7 +556,7 @@ const MemberDashboard: React.FC = () => {
               disabled={loading}
               className="w-full bg-primary-600 text-white py-3 rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
             >
-              {loading ? "Adicionando Membro..." : "Adicionar Membro"}
+              {loading ? "Aguarde..." : "Adicionar Membro"}
             </button>
           </form>
         </div>
