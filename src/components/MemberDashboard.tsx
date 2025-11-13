@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { supabase } from "../lib/supabase";
-import { Affiliate } from "../types/affiliate";
+import { Member } from "../types/member";
 
 const MemberDashboard: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -14,19 +14,32 @@ const MemberDashboard: React.FC = () => {
   });
 
   const [affiliates, setAffiliates] = useState<
-    Omit<Affiliate, "id" | "member_id" | "created_at" | "updated_at">[]
+    Omit<
+      Member,
+      | "id"
+      | "owner_id"
+      | "created_at"
+      | "updated_at"
+      | "address"
+      | "birth_date"
+      | "expiration_date"
+      | "join_date"
+      | "status"
+    >[]
   >([]);
   const [currentAffiliate, setCurrentAffiliate] = useState({
     full_name: "",
     cpf_dni: "",
     phone: "",
     email: "",
+    member_type: "",
   });
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{
     type: "success" | "error";
     text: string;
+    message?: string;
   } | null>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,7 +62,13 @@ const MemberDashboard: React.FC = () => {
       return;
     }
     setAffiliates([...affiliates, currentAffiliate]);
-    setCurrentAffiliate({ full_name: "", cpf_dni: "", phone: "", email: "" });
+    setCurrentAffiliate({
+      full_name: "",
+      cpf_dni: "",
+      phone: "",
+      email: "",
+      member_type: "affiliate",
+    });
   };
 
   const removeAffiliate = (index: number) => {
@@ -62,16 +81,12 @@ const MemberDashboard: React.FC = () => {
     setMessage(null);
 
     try {
-      const qrToken = `${Date.now()}-${Math.random()
-        .toString(36)
-        .substr(2, 9)}`;
-
       const { data: member, error: memberError } = await supabase
         .from("members")
         .insert([
           {
             ...formData,
-            qr_code_token: qrToken,
+            member_type: "owner",
             status: "active",
           },
         ])
@@ -83,14 +98,19 @@ const MemberDashboard: React.FC = () => {
       if (affiliates.length > 0 && member) {
         const affiliatesData = affiliates.map((aff) => ({
           ...aff,
-          member_id: member.id,
+          owner_id: member.id,
+          member_type: "affiliate",
+          status: "active",
         }));
 
         const { error: affiliatesError } = await supabase
-          .from("affiliates")
+          .from("members")
           .insert(affiliatesData);
 
-        if (affiliatesError) throw affiliatesError;
+        if (affiliatesError) {
+          await supabase.from("members").delete().eq("id", member.id);
+          throw affiliatesError;
+        }
       }
 
       setMessage({ type: "success", text: "Membro adicionado com sucesso!" });
@@ -109,6 +129,7 @@ const MemberDashboard: React.FC = () => {
         type: "error",
         text:
           error instanceof Error ? error.message : "Falha ao adicionar membro",
+        message: error instanceof Error ? error.message : undefined,
       });
     } finally {
       setLoading(false);
@@ -128,6 +149,7 @@ const MemberDashboard: React.FC = () => {
                   ? "bg-green-50 text-green-800"
                   : "bg-red-50 text-red-800"
               }`}
+              title={message.message}
             >
               {message.text}
             </div>

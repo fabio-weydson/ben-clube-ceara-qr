@@ -16,7 +16,7 @@ const QRCodeModal: React.FC<QRCodeModalProps> = ({
   onClose,
 }) => {
   if (!isOpen || !member) return null;
-  const QrURL = `${REACT_APP_URL}/?token=${member.qr_code_token}`;
+  const QrURL = `${REACT_APP_URL}/?token=${member.id}`;
 
   return (
     <div

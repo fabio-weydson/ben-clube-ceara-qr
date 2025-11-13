@@ -9,8 +9,8 @@ export interface Member {
   join_date: string | null;
   expiration_date: string | null;
   status: "active" | "inactive" | "pending" | "expired";
-  qr_code_token: string;
-  last_qr_validation: string | null;
+  owner_id: string;
+  member_type: string;
   created_at: string;
   updated_at: string;
 }

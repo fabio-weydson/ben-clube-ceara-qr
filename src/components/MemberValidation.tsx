@@ -23,7 +23,7 @@ const MemberValidation: React.FC = () => {
         const { data, error: supabaseError } = await supabase
           .from("members")
           .select("*")
-          .eq("qr_code_token", token)
+          .eq("id", token)
           .maybeSingle();
 
         if (supabaseError) {
