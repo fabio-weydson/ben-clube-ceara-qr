@@ -1,28 +1,32 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import MemberValidation from "./components/MemberValidation";
 import MembersList from "./components/MembersList";
+import MemberDashboard from "./components/MemberDashboard";
+import { Route, Routes, useLocation } from "react-router-dom";
 
 function App() {
-  const [view, setView] = useState<"validation" | "members">("members");
+  const location = useLocation();
 
   useEffect(() => {
-    try {
-      const params = new URLSearchParams(window.location.search);
-      const token = params.get("token");
+    if (location.pathname === "/validacao") return;
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
 
-      if (!token) {
-        setView("members");
-      } else {
-        setView("validation");
-      }
-    } catch (error) {
-      setView("members");
+    if (token) {
+      console.log("Navegando para validação com token:", token);
+      window.location.href = `/validacao?token=${token}`;
+      return;
     }
   }, []);
 
   return (
     <div className="App">
-      {view === "members" ? <MembersList /> : <MemberValidation />}
+      <Routes>
+        <Route path="/" element={<MemberValidation />} />
+        <Route path="/membros" element={<MembersList />} />
+        <Route path="/painel" element={<MemberDashboard />} />
+        <Route path="/validacao" element={<MemberValidation />} />
+      </Routes>
     </div>
   );
 }
