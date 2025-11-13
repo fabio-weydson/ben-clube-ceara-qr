@@ -1,4 +1,3 @@
-import React from "react";
 import MemberValidation from "./components/MemberValidation";
 
 function App() {
