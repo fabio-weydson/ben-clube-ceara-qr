@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Member } from "../types/member";
 import { supabase } from "../lib/supabase";
 import QRCodeModal from "./QRCodeModal";
+import { getStatusBadgeClass, getStatusLabel } from "../utils/statusUtils";
 
 const MembersList: React.FC = () => {
   const [members, setMembers] = useState<Member[]>([]);
@@ -51,21 +52,6 @@ const MembersList: React.FC = () => {
       member.cpf_dni.includes(searchTerm) ||
       member.email?.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  const getStatusBadgeClass = (status: Member["status"]) => {
-    switch (status) {
-      case "active":
-        return "bg-green-100 text-green-800";
-      case "expired":
-        return "bg-red-100 text-red-800";
-      case "inactive":
-        return "bg-gray-100 text-gray-800";
-      case "pending":
-        return "bg-yellow-100 text-yellow-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
 
   if (loading) {
     return (
@@ -173,8 +159,9 @@ const MembersList: React.FC = () => {
                           className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusBadgeClass(
                             member.status
                           )}`}
+                          title={`Status: ${getStatusLabel(member.status)}`}
                         >
-                          {member.status}
+                          {getStatusLabel(member.status)}
                         </span>
                       </td>
                       <td className="px-4 py-4 text-sm text-gray-900">

@@ -1,6 +1,7 @@
 import React from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { Member } from "../types/member";
+import { getStatusBadgeClass, getStatusLabel } from "../utils/statusUtils";
 
 interface QRCodeModalProps {
   member: Member | null;
@@ -25,7 +26,6 @@ const QRCodeModal: React.FC<QRCodeModalProps> = ({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold text-gray-800">QR Code</h2>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
@@ -48,17 +48,12 @@ const QRCodeModal: React.FC<QRCodeModalProps> = ({
             <div className="flex justify-between text-sm">
               <span className="text-gray-600">Status:</span>
               <span
-                className={`font-semibold ${
-                  member.status === "active"
-                    ? "text-green-600"
-                    : member.status === "expired"
-                    ? "text-red-600"
-                    : member.status === "inactive"
-                    ? "text-gray-600"
-                    : "text-yellow-600"
-                }`}
+                className={`font-semibold ${getStatusBadgeClass(
+                  member.status
+                )}`}
+                title={`Status: ${getStatusLabel(member.status)}`}
               >
-                {member.status.toUpperCase()}
+                {getStatusLabel(member.status)}
               </span>
             </div>
             {member.expiration_date && (

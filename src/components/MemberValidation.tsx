@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 import { Member } from "../types/member";
+import { getStatusBadgeClass, getStatusLabel } from "../utils/statusUtils";
 
 const MemberValidation: React.FC = () => {
   const [member, setMember] = useState<Member | null>(null);
@@ -51,36 +52,6 @@ const MemberValidation: React.FC = () => {
   const formatDate = (dateString: string | null) => {
     if (!dateString) return "N/A";
     return new Date(dateString).toLocaleDateString("pt-BR");
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "active":
-        return "bg-green-100 text-green-800 border-green-200";
-      case "inactive":
-        return "bg-gray-100 text-gray-800 border-gray-200";
-      case "pending":
-        return "bg-yellow-100 text-yellow-800 border-yellow-200";
-      case "expired":
-        return "bg-red-100 text-red-800 border-red-200";
-      default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
-    }
-  };
-
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case "Ativo":
-        return "Ativo";
-      case "Inativo":
-        return "Inativo";
-      case "Pendente":
-        return "Pendente";
-      case "Expirado":
-        return "Expirado";
-      default:
-        return status;
-    }
   };
 
   if (loading) {
@@ -143,9 +114,10 @@ const MemberValidation: React.FC = () => {
             Validação de Cadastro
           </h2>
           <div
-            className={`inline-flex items-center px-4 py-2 rounded-full border-2 ${getStatusColor(
+            className={`inline-flex items-center px-4 py-2 rounded-full border-2 ${getStatusBadgeClass(
               member.status
             )}`}
+            title={`Status: ${getStatusLabel(member.status)}`}
           >
             <span className="font-semibold text-sm uppercase tracking-wide">
               {getStatusLabel(member.status)}
