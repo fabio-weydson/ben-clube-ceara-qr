@@ -3,6 +3,7 @@ import { QRCodeSVG } from "qrcode.react";
 import { Member } from "../types/member";
 import { getStatusBadgeClass, getStatusLabel } from "../utils/statusUtils";
 
+const { REACT_APP_URL } = process.env;
 interface QRCodeModalProps {
   member: Member | null;
   isOpen: boolean;
@@ -15,6 +16,7 @@ const QRCodeModal: React.FC<QRCodeModalProps> = ({
   onClose,
 }) => {
   if (!isOpen || !member) return null;
+  const QrURL = `${REACT_APP_URL}/?token=${member.qr_code_token}`;
 
   return (
     <div
@@ -41,7 +43,7 @@ const QRCodeModal: React.FC<QRCodeModalProps> = ({
           <p className="text-sm text-gray-500 mb-4">Doc: {member.cpf_dni}</p>
 
           <div className="bg-gray-50 p-6 rounded-lg flex justify-center items-center">
-            <QRCodeSVG value={member.qr_code_token} size={256} level="H" />
+            <QRCodeSVG value={QrURL} size={256} level="H" />
           </div>
 
           <div className="mt-4 space-y-2">
@@ -75,7 +77,7 @@ const QRCodeModal: React.FC<QRCodeModalProps> = ({
                 const url = canvas.toDataURL("image/png");
                 const link = document.createElement("a");
                 link.href = url;
-                link.download = `qr-${member.full_name.replace(
+                link.download = `${REACT_APP_URL}?qr-${member.full_name.replace(
                   /\s+/g,
                   "-"
                 )}.png`;
