@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Member } from "../types/member";
 import { supabase } from "../lib/supabase";
+import QRCodeModal from "./QRCodeModal";
 
 const MembersList: React.FC = () => {
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedMember, setSelectedMember] = useState<Member | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
@@ -30,6 +33,16 @@ const MembersList: React.FC = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleShowQRCode = (member: Member) => {
+    setSelectedMember(member);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedMember(null);
   };
 
   const filteredMembers = members.filter(
@@ -173,9 +186,7 @@ const MembersList: React.FC = () => {
                       </td>
                       <td className="px-4 py-4">
                         <button
-                          onClick={() =>
-                            alert("Funcionalidade de exibir QR Code")
-                          }
+                          onClick={() => handleShowQRCode(member)}
                           className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium"
                         >
                           Exibir QR Code
@@ -189,6 +200,12 @@ const MembersList: React.FC = () => {
           </div>
         </div>
       </div>
+
+      <QRCodeModal
+        member={selectedMember}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+      />
     </div>
   );
 };
