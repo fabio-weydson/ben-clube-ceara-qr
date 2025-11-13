@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { supabase } from "../lib/supabase";
 import { Member } from "../types/member";
+import { getAddressByCep } from "../utils";
 
 const MemberDashboard: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -71,17 +72,16 @@ const MemberDashboard: React.FC = () => {
         .replace(/\D/g, "")
         .slice(0, 10);
       if (formattedPostalCode.length === 8) {
-        fetch(`https://viacep.com.br/ws/${formattedPostalCode}/json/`)
-          .then((response) => response.json())
+        getAddressByCep(formattedPostalCode)
           .then((data) => {
-            if (!data.erro) {
+            if (data) {
               setFormData({
                 ...formData,
                 postal_code: formattedPostalCode,
-                address: data.logradouro || "",
-                district: data.bairro || "",
-                city: data.localidade || "",
-                state: data.uf || "",
+                address: data.address || "",
+                district: data.district || "",
+                city: data.city || "",
+                state: data.state || "",
               });
             }
           })
