@@ -176,7 +176,7 @@ const MembersList: React.FC = () => {
                           onClick={() => handleShowQRCode(member)}
                           className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium"
                         >
-                          Exibir QR Code
+                          QR Code
                         </button>
                       </td>
                     </tr>
