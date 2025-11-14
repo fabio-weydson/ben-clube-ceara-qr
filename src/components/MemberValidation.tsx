@@ -32,13 +32,11 @@ const MemberValidation: React.FC = () => {
           return;
         }
 
-        setMember(data);
+        await supabase.from("qr_scans").insert({
+          member_id: data.id,
+        });
 
-        // Atualiza o last_qr_validation
-        await supabase
-          .from("members")
-          .update({ last_qr_validation: new Date().toISOString() })
-          .eq("id", data.id);
+        setMember(data);
       } catch (err) {
         setError("Erro ao buscar informações do membro");
       } finally {
