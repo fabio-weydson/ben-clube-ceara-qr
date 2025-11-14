@@ -1,12 +1,12 @@
 export interface Member {
   id: string;
-  contractNumber: string;
+  contract_number: string;
   full_name: string;
   cpf_dni: string;
   email: string | null;
   phone: string | null;
   address: string | null;
-  postalCode: string;
+  postal_code: string;
   district: string;
   city: string;
   state: string;
