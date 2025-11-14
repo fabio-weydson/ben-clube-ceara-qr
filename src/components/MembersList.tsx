@@ -154,7 +154,7 @@ const MembersList: React.FC = () => {
                             {member.full_name}
                           </div>
                           <div className="text-sm text-gray-500">
-                            {member.cpf_dni}
+                            Contrato: {member.contract_number}
                           </div>
                         </div>
                       </td>
