@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Member } from "../types/member";
+import { Member, MemberWithAffiliates } from "../types/member";
 import { supabase } from "../lib/supabase";
 import QRCodeModal from "./QRCodeModal";
 import { getStatusBadgeClass, getStatusLabel } from "../utils/statusUtils";
@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 
 const MembersList: React.FC = () => {
   const navigation = useNavigate();
-  const [members, setMembers] = useState<Member[]>([]);
+  const [members, setMembers] = useState<MemberWithAffiliates[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
@@ -23,14 +23,28 @@ const MembersList: React.FC = () => {
       setLoading(true);
       setError(null);
 
-      const { data, error: fetchError } = await supabase
+      const { data: _members, error: fetchError } = await supabase
         .from("members")
         .select("*")
-        .order("full_name", { ascending: true });
+        .order("full_name", { ascending: false });
 
       if (fetchError) throw fetchError;
 
-      setMembers(data || []);
+      const onlyAfiliates = _members?.filter(
+        (m) => m.member_type === "affiliate"
+      );
+
+      const onlyMembers = _members?.filter((m) => m.member_type === "owner");
+
+      const membersWithAffiliates = onlyMembers?.map((m: Member) => ({
+        ...m,
+        affiliates:
+          onlyAfiliates?.filter((a: Member) => a.owner_id === m.id) || [],
+      }));
+
+      console.log("Members with affiliates:", membersWithAffiliates);
+
+      setMembers(membersWithAffiliates || []);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch members");
     } finally {
@@ -154,7 +168,10 @@ const MembersList: React.FC = () => {
                             {member.full_name}
                           </div>
                           <div className="text-sm text-gray-500">
-                            Contrato: {member.contract_number}
+                            Contrato: {member.contract_number} / Afiliados{" "}
+                            {member.affiliates.length
+                              ? member.affiliates.length
+                              : 0}
                           </div>
                         </div>
                       </td>

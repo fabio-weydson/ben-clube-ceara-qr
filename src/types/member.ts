@@ -22,3 +22,7 @@ export interface Member {
   updated_at: string;
   referral: string | null;
 }
+
+export interface MemberWithAffiliates extends Member {
+  affiliates: Member[];
+}
