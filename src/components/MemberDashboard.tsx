@@ -3,8 +3,10 @@ import { supabase } from "../lib/supabase";
 import { Member } from "../types/member";
 import { getAddressByCep } from "../utils";
 import { ESTADOS_BRASIL } from "../consts";
+import { useNavigate } from "react-router-dom";
 
 const MemberDashboard: React.FC = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     full_name: "",
     cpf_dni: "",
@@ -199,6 +201,7 @@ const MemberDashboard: React.FC = () => {
       });
     } finally {
       setLoading(false);
+      navigate("/membros");
     }
   };
 

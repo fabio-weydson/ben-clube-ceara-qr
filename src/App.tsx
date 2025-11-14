@@ -23,7 +23,7 @@ function App() {
   return (
     <div className="App">
       <Routes>
-        <Route path="/" element={<MemberValidation />} />
+        <Route path="/" element={<MembersList />} />
         <Route path="/membros" element={<MembersList />} />
         <Route path="/painel" element={<MemberDashboard />} />
         <Route path="/validacao" element={<MemberValidation />} />

@@ -3,8 +3,10 @@ import { Member } from "../types/member";
 import { supabase } from "../lib/supabase";
 import QRCodeModal from "./QRCodeModal";
 import { getStatusBadgeClass, getStatusLabel } from "../utils/statusUtils";
+import { useNavigate } from "react-router-dom";
 
 const MembersList: React.FC = () => {
+  const navigation = useNavigate();
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -85,11 +87,21 @@ const MembersList: React.FC = () => {
     <div className="min-h-screen bg-gray-50 py-8 px-4">
       <div className="max-w-6xl mx-auto">
         <div className="bg-white rounded-lg shadow-lg p-6">
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">
-              Lista de Membros
-            </h1>
-            <p className="text-gray-600">Total de membros: {members.length}</p>
+          <div className="mb-6 flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-800 mb-2">
+                Lista de Membros
+              </h1>
+              <p className="text-gray-600">
+                Total de membros: {members.length}
+              </p>
+            </div>
+            <button
+              onClick={() => navigation("/painel")}
+              className="bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors font-medium"
+            >
+              Cadastrar novo
+            </button>
           </div>
 
           <div className="mb-6">
