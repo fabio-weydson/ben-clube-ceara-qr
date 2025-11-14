@@ -25,4 +25,5 @@ export interface Member {
 
 export interface MemberWithAffiliates extends Member {
   affiliates: Member[];
+  isExpanded?: boolean;
 }

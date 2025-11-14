@@ -161,54 +161,110 @@ const MembersList: React.FC = () => {
                   </tr>
                 ) : (
                   filteredMembers.map((member) => (
-                    <tr key={member.id} className="hover:bg-gray-50">
-                      <td className="px-4 py-4">
-                        <div>
-                          <div className="font-medium text-gray-900">
-                            {member.full_name}
+                    <>
+                      <tr key={member.id} className="hover:bg-gray-50">
+                        <td className="px-4 py-4">
+                          <div
+                            onClick={() => {
+                              const newMembers = members.map((m) =>
+                                m.id === member.id
+                                  ? { ...m, isExpanded: !m.isExpanded }
+                                  : m
+                              );
+                              setMembers(newMembers);
+                            }}
+                            className="cursor-pointer"
+                          >
+                            <div className="font-medium text-gray-900">
+                              {member.full_name}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              Contrato: {member.contract_number} / Dependentes:{" "}
+                              {member.affiliates.length
+                                ? member.affiliates.length
+                                : 0}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-4 py-4">
+                          <div className="text-sm text-gray-900">
+                            {member.email || "-"}
                           </div>
                           <div className="text-sm text-gray-500">
-                            Contrato: {member.contract_number} / Afiliados{" "}
-                            {member.affiliates.length
-                              ? member.affiliates.length
-                              : 0}
+                            {member.phone || "-"}
                           </div>
-                        </div>
-                      </td>
-                      <td className="px-4 py-4">
-                        <div className="text-sm text-gray-900">
-                          {member.email || "-"}
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          {member.phone || "-"}
-                        </div>
-                      </td>
-                      <td className="px-4 py-4">
-                        <span
-                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusBadgeClass(
-                            member.status
-                          )}`}
-                          title={`Status: ${getStatusLabel(member.status)}`}
-                        >
-                          {getStatusLabel(member.status)}
-                        </span>
-                      </td>
-                      <td className="px-4 py-4 text-sm text-gray-900">
-                        {member.expiration_date
-                          ? new Date(
-                              member.expiration_date
-                            ).toLocaleDateString()
-                          : "-"}
-                      </td>
-                      <td className="px-4 py-4">
-                        <button
-                          onClick={() => handleShowQRCode(member)}
-                          className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium"
-                        >
-                          QR Code
-                        </button>
-                      </td>
-                    </tr>
+                        </td>
+                        <td className="px-4 py-4">
+                          <span
+                            className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusBadgeClass(
+                              member.status
+                            )}`}
+                            title={`Status: ${getStatusLabel(member.status)}`}
+                          >
+                            {getStatusLabel(member.status)}
+                          </span>
+                        </td>
+                        <td className="px-4 py-4 text-sm text-gray-900">
+                          {member.expiration_date
+                            ? new Date(
+                                member.expiration_date
+                              ).toLocaleDateString()
+                            : "-"}
+                        </td>
+                        <td className="px-4 py-4">
+                          <button
+                            onClick={() => handleShowQRCode(member)}
+                            className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium"
+                          >
+                            QR Code
+                          </button>
+                        </td>
+                      </tr>
+
+                      {member.isExpanded && (
+                        <tr className="bg-gray-50">
+                          <td colSpan={5} className="px-4 py-2">
+                            <table className="w-full">
+                              <tbody>
+                                {member.affiliates.map((affiliate) => (
+                                  <tr
+                                    key={affiliate.id}
+                                    className="border-b border-gray-200 last:border-0"
+                                  >
+                                    <td className="py-2 text-sm text-gray-900">
+                                      {affiliate.full_name}{" "}
+                                      <span className="text-gray-500">
+                                        ({affiliate.cpf_dni})
+                                      </span>
+                                    </td>
+                                    <td align="right" className="py-2">
+                                      <button
+                                        onClick={() =>
+                                          handleShowQRCode(affiliate)
+                                        }
+                                        className="bg-primary-500 text-white px-3 py-1 rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium"
+                                      >
+                                        QR Code
+                                      </button>
+                                    </td>
+                                  </tr>
+                                ))}
+                                {!member.affiliates.length && (
+                                  <tr>
+                                    <td
+                                      colSpan={2}
+                                      className="py-2 text-sm text-gray-500"
+                                    >
+                                      Nenhum dependente cadastrado.
+                                    </td>
+                                  </tr>
+                                )}
+                              </tbody>
+                            </table>
+                          </td>
+                        </tr>
+                      )}
+                    </>
                   ))
                 )}
               </tbody>
