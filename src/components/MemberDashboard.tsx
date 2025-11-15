@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { supabase } from "../lib/supabase";
-import { Affiliate, Member, NewMember } from "../types/member";
+import { Affiliate, NewMember } from "../types/member";
 import { getAddressByCep } from "../utils";
 import { ESTADOS_BRASIL } from "../consts";
 import { useNavigate } from "react-router-dom";
@@ -168,7 +168,7 @@ const MemberDashboard: React.FC = () => {
 
       setTimeout(() => {
         setMessage(null);
-        navigate("/membros");
+        //navigate("/membros");
       }, 3000);
     }
   };
