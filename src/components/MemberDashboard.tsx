@@ -168,7 +168,7 @@ const MemberDashboard: React.FC = () => {
 
       setTimeout(() => {
         setMessage(null);
-        //navigate("/membros");
+        navigate("/membros");
       }, 3000);
     }
   };
