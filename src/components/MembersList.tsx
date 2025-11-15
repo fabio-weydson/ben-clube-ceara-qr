@@ -223,15 +223,15 @@ const MembersList: React.FC = () => {
 
                       {member.isExpanded && (
                         <tr className="bg-gray-50">
-                          <td colSpan={5} className="px-4 py-2">
-                            <table className="w-full">
+                          <td colSpan={5}>
+                            <table className="w-full bg-gray-200  px-4 py-2">
                               <tbody>
                                 {member.affiliates.map((affiliate) => (
                                   <tr
                                     key={affiliate.id}
                                     className="border-b border-gray-200 last:border-0"
                                   >
-                                    <td className="py-2 text-sm text-gray-900">
+                                    <td className="py-2 px-4 text-sm text-gray-900">
                                       {affiliate.full_name}{" "}
                                       <span className="text-gray-500">
                                         ({affiliate.cpf_dni})

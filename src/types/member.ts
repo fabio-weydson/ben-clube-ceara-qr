@@ -1,18 +1,18 @@
 export interface Member {
   id: string;
-  contract_number: string;
+  contract_number: number;
   full_name: string;
   cpf_dni: string;
-  email: string | null;
-  phone: string | null;
-  address: string | null;
+  email: string;
+  phone: string;
+  address: string;
   postal_code: string;
   district: string;
   city: string;
   state: string;
-  birth_date: string | null;
-  join_date: string | null;
-  expiration_date: string | null;
+  birth_date: string;
+  join_date: string;
+  expiration_date: string;
   status: "active" | "inactive" | "pending" | "expired";
   owner_id: string;
   member_type: string;
@@ -20,8 +20,35 @@ export interface Member {
   agent: string;
   created_at: string;
   updated_at: string;
-  referral: string | null;
+  referral?: string | null;
 }
+
+export interface NewMember
+  extends Omit<
+    Member,
+    "id" | "created_at" | "updated_at" | "owner_id" | "status"
+  > {}
+
+export interface Affiliate
+  extends Omit<
+    NewMember,
+    | "id"
+    | "owner_id"
+    | "created_at"
+    | "updated_at"
+    | "address"
+    | "district"
+    | "city"
+    | "state"
+    | "postal_code"
+    | "birth_date"
+    | "expiration_date"
+    | "join_date"
+    | "status"
+    | "profession"
+    | "referral"
+    | "agent"
+  > {}
 
 export interface MemberWithAffiliates extends Member {
   affiliates: Member[];

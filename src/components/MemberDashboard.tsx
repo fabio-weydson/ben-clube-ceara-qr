@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { supabase } from "../lib/supabase";
-import { Member } from "../types/member";
+import { Affiliate, Member, NewMember } from "../types/member";
 import { getAddressByCep } from "../utils";
 import { ESTADOS_BRASIL } from "../consts";
 import { useNavigate } from "react-router-dom";
 
 const MemberDashboard: React.FC = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<NewMember>({
     full_name: "",
     cpf_dni: "",
     email: "",
@@ -15,7 +15,7 @@ const MemberDashboard: React.FC = () => {
     address: "",
     birth_date: "",
     expiration_date: "",
-    contract_number: "",
+    contract_number: 0,
     postal_code: "",
     district: "",
     city: "",
@@ -23,36 +23,18 @@ const MemberDashboard: React.FC = () => {
     profession: "",
     agent: "",
     referral: "",
+    member_type: "owner",
+    join_date: new Date().toISOString().split("T")[0],
   });
 
-  const [affiliates, setAffiliates] = useState<
-    Omit<
-      Member,
-      | "id"
-      | "owner_id"
-      | "created_at"
-      | "updated_at"
-      | "address"
-      | "birth_date"
-      | "expiration_date"
-      | "join_date"
-      | "status"
-      | "referral"
-    >[]
-  >([]);
-  const [currentAffiliate, setCurrentAffiliate] = useState({
+  const [affiliates, setAffiliates] = useState<Affiliate[]>([]);
+  const [currentAffiliate, setCurrentAffiliate] = useState<Affiliate>({
     full_name: "",
     cpf_dni: "",
     phone: "",
     email: "",
     member_type: "affiliate",
-    contract_number: "",
-    postal_code: "",
-    district: "",
-    city: "",
-    state: "",
-    profession: "",
-    agent: "",
+    contract_number: 0,
   });
 
   const [loading, setLoading] = useState(false);
@@ -121,13 +103,7 @@ const MemberDashboard: React.FC = () => {
       phone: "",
       email: "",
       member_type: "affiliate",
-      contract_number: "",
-      postal_code: "",
-      district: "",
-      city: "",
-      state: "",
-      profession: "",
-      agent: "",
+      contract_number: formData?.contract_number,
     });
   };
 
@@ -162,7 +138,7 @@ const MemberDashboard: React.FC = () => {
           member_type: "affiliate",
           status: "active",
         }));
-
+        console.log("afiliatesData", affiliatesData);
         const { error: affiliatesError } = await supabase
           .from("members")
           .insert(affiliatesData);
@@ -174,23 +150,6 @@ const MemberDashboard: React.FC = () => {
       }
 
       setMessage({ type: "success", text: "Membro adicionado com sucesso!" });
-      setFormData({
-        full_name: "",
-        cpf_dni: "",
-        email: "",
-        phone: "",
-        address: "",
-        birth_date: "",
-        expiration_date: "",
-        contract_number: "",
-        postal_code: "",
-        district: "",
-        city: "",
-        state: "",
-        profession: "",
-        agent: "",
-        referral: "",
-      });
       setAffiliates([]);
     } catch (error) {
       setMessage({
@@ -201,7 +160,16 @@ const MemberDashboard: React.FC = () => {
       });
     } finally {
       setLoading(false);
-      navigate("/membros");
+
+      setMessage({
+        type: "success",
+        text: "Membro adicionado com sucesso! Aguarde...",
+      });
+
+      setTimeout(() => {
+        setMessage(null);
+        navigate("/membros");
+      }, 3000);
     }
   };
 
@@ -400,7 +368,7 @@ const MemberDashboard: React.FC = () => {
                 <input
                   type="text"
                   name="referral"
-                  value={formData.referral}
+                  value={formData?.referral || ""}
                   onChange={handleInputChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 />
@@ -468,7 +436,7 @@ const MemberDashboard: React.FC = () => {
                     type="email"
                     name="email"
                     placeholder="Email"
-                    value={currentAffiliate.email}
+                    value={currentAffiliate?.email || ""}
                     onChange={handleAffiliateChange}
                     className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   />
