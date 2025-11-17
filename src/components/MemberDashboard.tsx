@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { supabase } from "../lib/supabase";
 import { Affiliate, NewMember } from "../types/member";
 import { getAddressByCep } from "../utils";
@@ -42,6 +42,12 @@ const MemberDashboard: React.FC = () => {
     type: "success" | "error";
     text: string;
     message?: string;
+  } | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [fileData, setFileData] = useState<{
+    fileName: string;
+    fileUrl: string;
+    uploaded: boolean;
   } | null>(null);
 
   const defaultExpirationDate = () => {
@@ -171,6 +177,57 @@ const MemberDashboard: React.FC = () => {
         navigate("/membros");
       }, 3000);
     }
+  };
+
+  const handleFileUpload = async () => {
+    if (!fileInputRef.current || !fileInputRef.current.files) {
+      setMessage({
+        type: "error",
+        text: "Nenhum arquivo selecionado para upload.",
+      });
+      return;
+    }
+
+    if (!formData.contract_number || formData.contract_number === 0) {
+      setMessage({
+        type: "error",
+        text: "Por favor, preencha o número do contrato.",
+      });
+      return;
+    }
+    const file = fileInputRef.current.files[0];
+    const fileExtension = file.name.split(".").pop()?.toLowerCase();
+    if (fileExtension !== "pdf") {
+      setMessage({
+        type: "error",
+        text: "Apenas arquivos PDF são permitidos.",
+      });
+      return;
+    }
+    const fileName = `${formData.contract_number}_${Date.now()}.pdf`;
+
+    const { data, error } = await supabase.storage
+      .from("contracts")
+      .upload(fileName, file, { upsert: false });
+
+    if (error) {
+      setMessage({
+        type: "error",
+        text: "Erro ao fazer upload do arquivo.",
+        message: error.message,
+      });
+      return;
+    }
+
+    console.log("Arquivo enviado com sucesso:", data);
+
+    setMessage({
+      type: "success",
+      text: "Arquivo enviado com sucesso!",
+    });
+    const fileUrl = supabase.storage.from("contracts").getPublicUrl(fileName)
+      .data.publicUrl;
+    setFileData({ fileName, fileUrl, uploaded: true });
   };
 
   return (
@@ -475,6 +532,37 @@ const MemberDashboard: React.FC = () => {
                   ))}
                 </div>
               )}
+              <div className="mt-4 space-y-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Upload do contrato (PDF)
+                </label>
+                {!fileData?.uploaded && (
+                  <div
+                    id="side-by-side"
+                    className="flex items-center space-x-4 mb-2 w-1/2"
+                  >
+                    <input
+                      type="file"
+                      name="contract_file"
+                      accept="application/pdf"
+                      className="w-full"
+                      ref={fileInputRef}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleFileUpload()}
+                      className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    >
+                      Upload
+                    </button>
+                  </div>
+                )}
+                {fileData?.uploaded && (
+                  <div className="text-green-600 font-medium">
+                    Arquivo "{fileData.fileName}" enviado com sucesso!
+                  </div>
+                )}
+              </div>
               <div className="mt-4 space-y-2">
                 <label className="flex items-center space-x-2">
                   <input
